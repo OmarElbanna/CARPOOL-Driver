@@ -21,6 +21,8 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController lastName = TextEditingController();
   TextEditingController phone = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
+  TextEditingController carModel = TextEditingController();
+  TextEditingController carColor = TextEditingController();
 
   bool passwordVisible = false;
   bool confirmPasswordVisible = false;
@@ -76,6 +78,20 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
+  String? validateCarModel(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Car model is required';
+    }
+    return null;
+  }
+
+  String? validateCarColor(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Car color is required';
+    }
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -98,9 +114,9 @@ class _SignupScreenState extends State<SignupScreen> {
         centerTitle: true,
       ),
       body: isLoading
-          ? const Center(
+          ?  Center(
               child: CircularProgressIndicator(
-              color: Colors.white,
+              color: Colors.blueGrey[700],
             ))
           : SingleChildScrollView(
               child: Center(
@@ -161,6 +177,36 @@ class _SignupScreenState extends State<SignupScreen> {
                         decoration: const InputDecoration(
                           suffixIcon: Icon(Icons.phone),
                           label: Text("Phone Number"),
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: carModel,
+                        validator: validateCarModel,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.car_rental),
+                          label: Text("Car Model"),
+                          border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5))),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: carColor,
+                        validator: validateCarColor,
+                        keyboardType: TextInputType.text,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(Icons.color_lens_rounded),
+                          label: Text("Car Color"),
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.all(Radius.circular(5))),
@@ -240,12 +286,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                   .set({
                                     'firstName': firstName.text,
                                     'lastName': lastName.text,
-                                    'phone': phone.text
+                                    'phone': phone.text,
+                                    'type': 'driver',
+                                    'carModel':carModel.text,
+                                    'carColor':carColor.text
                                   })
-                                  .then((value) => print("User Added"))
+                                  .then((value) => print("Driver Added"))
                                   .catchError((error) =>
                                       print("Failed to add user: $error"));
-                              await credential.user!.sendEmailVerification();
+                              // await credential.user!.sendEmailVerification();
+                              await FirebaseAuth.instance.signOut();
                               isLoading = false;
                               setState(() {});
                               AwesomeDialog(
@@ -253,9 +303,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                 dialogType: DialogType.success,
                                 animType: AnimType.rightSlide,
                                 title:
-                                    'Verification Mail has been sent successfully',
+                                    'Success',
                                 desc:
-                                    'Please check your email to verify your account',
+                                    'Your account has been created successfully',
                                 btnOkOnPress: () {
                                   Navigator.pushNamedAndRemoveUntil(
                                       context, '/login', (route) => false);

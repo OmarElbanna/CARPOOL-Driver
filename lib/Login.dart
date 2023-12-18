@@ -1,4 +1,5 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -54,9 +55,9 @@ class _LoginScreenState extends State<LoginScreen> {
         centerTitle: true,
       ),
       body: isLoading
-          ? const Center(
+          ?  Center(
               child: CircularProgressIndicator(
-              color: Colors.white,
+              color: Colors.blueGrey[700],
             ))
           : SingleChildScrollView(
               child: Center(
@@ -123,23 +124,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                     .signInWithEmailAndPassword(
                                         email: email.text,
                                         password: password.text);
-
-                                if (credential.user!.emailVerified) {
+                                final userDoc = await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(credential.user!.uid)
+                                    .get();
+                                final userData = userDoc.data();
+                                String type = userData!['type'];
+                                if (type.compareTo("driver") == 0) {
+                                  print("Driver#############");
                                   Navigator.pushReplacementNamed(
                                       context, '/home');
                                 } else {
-                                  isLoading = false;
-                                  setState(() {});
-                                  AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Unverified Account',
-                                    desc:
-                                        'Please check your email to verify your account',
-                                    btnOkOnPress: () {},
-                                  )..show();
+                                  print("User#############");
+                                  setState(() {
+                                    isLoading = false;
+                                    errorMessage = 'This account has been registered as a rider';
+                                  });
+                                  await FirebaseAuth.instance.signOut();
                                 }
+
+                                // if (credential.user!.emailVerified) {
+                                //   Navigator.pushReplacementNamed(
+                                //       context, '/home');
+                                // } else {
+                                //   isLoading = false;
+                                //   setState(() {});
+                                //   AwesomeDialog(
+                                //     context: context,
+                                //     dialogType: DialogType.error,
+                                //     animType: AnimType.rightSlide,
+                                //     title: 'Unverified Account',
+                                //     desc:
+                                //         'Please check your email to verify your account',
+                                //     btnOkOnPress: () {},
+                                //   )..show();
+                                // }
                               } on FirebaseAuthException catch (e) {
                                 isLoading = false;
                                 setState(() {});

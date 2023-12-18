@@ -17,8 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     Timer(const Duration(seconds: 3), () {
-      if (FirebaseAuth.instance.currentUser != null &&
-          FirebaseAuth.instance.currentUser!.emailVerified) {
+      if (FirebaseAuth.instance.currentUser != null) {
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         print("No user");
@@ -38,6 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 341,
               width: 466,
               child: Image.asset("images/Logo2.png"),
+            ),
+            Text(
+              "Driver",
+              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
             SpinKitFadingCircle(
               color: Colors.blueGrey[700],
