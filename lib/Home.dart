@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:carpool_driver/FromFaculty.dart';
+
 import 'Account.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,14 +17,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  TextEditingController dateInput = TextEditingController();
-  late DateTime? pickedDate;
   late User user;
-  var gates = [
-    'ASUFE Gate 3',
-    'ASUFE Gate 4',
-  ];
-  String fromdropdownvalue = 'ASUFE Gate 3';
 
   void updateUser() {
     setState(() {});
@@ -52,97 +47,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ]),
           backgroundColor: Colors.blueGrey[700],
           title: const Text(
-            "Add New Ride",
+            "Add New Trip",
             style: TextStyle(
               fontSize: 20,
             ),
           ),
           centerTitle: true,
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
+            FromFaculty(),
             SingleChildScrollView(
               child: Center(
                   child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Form(
-                  // key: _formKey,
-                  child: Column(
-                    children: [
-                      DropdownButtonFormField(
-                        // validator: ,
-                        decoration: const InputDecoration(
-                          label: Text("Gate"),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
-                        ),
-                        items: gates.map((String items) {
-                          return DropdownMenuItem(
-                            value: items,
-                            child: Text(items),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            fromdropdownvalue = newValue!;
-                          });
-                        },
-                        value: fromdropdownvalue,
-                        icon: const Icon(Icons.keyboard_arrow_down),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        // controller: lastName,
-                        // validator: validateLastName,
-                        keyboardType: TextInputType.text,
-                        decoration: const InputDecoration(
-                          label: Text("Destination"),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextField(
-                        controller: dateInput,
-                        //editing controller of this TextField
-                        decoration: const InputDecoration(
-                          label: Text("Date"),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(5))),
-                        ),
-                        readOnly: true,
-                        //set it true, so that user will not able to edit text
-                        onTap: () async {
-                          pickedDate = (await showDatePicker(
-                              context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime.now(),
-                              lastDate: DateTime(2100)))!;
-                          if (pickedDate != null) {
-                            String formattedDate  = "${pickedDate!.day}/${pickedDate!.month}/${pickedDate!.year}";
-                            print(pickedDate);
-                            setState(() {
-                              dateInput.text = formattedDate;
-                            });
-                          } else {}
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              )),
-            ),
-            SingleChildScrollView(
-              child: Center(
-                  child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20.0),
                 child: Form(
                   // key: _formKey,
                   child: Column(
