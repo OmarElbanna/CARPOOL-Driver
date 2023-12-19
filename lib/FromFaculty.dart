@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:carpool_driver/PinLocation.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +56,7 @@ class _FromFacultyState extends State<FromFaculty> {
 
   @override
   void initState() {
-    time.text = "5:30";
+    time.text = "7:30 AM";
     pickedDate = null;
     super.initState();
   }
@@ -75,7 +74,7 @@ class _FromFacultyState extends State<FromFaculty> {
               DropdownButtonFormField(
                 validator: validateGate,
                 decoration: const InputDecoration(
-                  label: Text("Gate"),
+                  label: Text("Starting Gate"),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),

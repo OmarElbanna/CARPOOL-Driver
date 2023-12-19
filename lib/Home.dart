@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carpool_driver/FromFaculty.dart';
+import 'package:carpool_driver/ToFaculty.dart';
 
 import 'Account.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,19 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: const TabBarView(
           children: [
             FromFaculty(),
-            SingleChildScrollView(
-              child: Center(
-                  child: Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Form(
-                  // key: _formKey,
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [],
-                  ),
-                ),
-              )),
-            ),
+            ToFaculty(),
           ],
         ),
         drawer: Drawer(
