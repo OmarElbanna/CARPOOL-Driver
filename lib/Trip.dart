@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class Trip {
   String? from;
   String? to;

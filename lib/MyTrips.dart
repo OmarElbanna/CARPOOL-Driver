@@ -1,3 +1,4 @@
+import 'package:carpool_driver/TripRequets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -196,7 +197,17 @@ class _TripsScreenState extends State<TripsScreen> {
                         )
                       ],
                     ),
-                    onTap: () async {},
+                    onTap: () {
+                      Trip trip = Trip(id: trips[index].id);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TripRequestsScreen(
+                            trip: trip,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               );
