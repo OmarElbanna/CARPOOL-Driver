@@ -38,7 +38,7 @@ class _TripsScreenState extends State<TripsScreen> {
       ),
       body: Center(
           child: FutureBuilder(
-        future: getUserTrips(user.uid),
+        future: getDriverTrips(user.uid),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -50,7 +50,7 @@ class _TripsScreenState extends State<TripsScreen> {
           if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Text(
               'Sorry, you have no trips',
               style: TextStyle(
@@ -59,11 +59,11 @@ class _TripsScreenState extends State<TripsScreen> {
                   fontWeight: FontWeight.bold),
             );
           }
-          final trips = snapshot.data;
+          final trips = snapshot.data.docs;
           return ListView.builder(
             itemCount: trips.length,
             itemBuilder: (context, index) {
-              DateTime date = trips[index]['details']['time'].toDate();
+              DateTime date = trips[index]['time'].toDate();
               String dateToShow = "${date.day}/${date.month}/${date.year}";
               String timeToShow = "${date.hour}:${date.minute}";
               return Padding(
@@ -90,12 +90,12 @@ class _TripsScreenState extends State<TripsScreen> {
                     title: Row(
                       children: [
                         Text(
-                          '${trips[index]['details']['from']}',
+                          '${trips[index]['from']}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const Icon(Icons.arrow_right_alt),
                         Text(
-                          '${trips[index]['details']['to']}',
+                          '${trips[index]['to']}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -130,7 +130,7 @@ class _TripsScreenState extends State<TripsScreen> {
                                   color: Colors.green,
                                 ),
                                 Text(
-                                  ' Price: ${trips[index]['details']['price']}',
+                                  ' Price: ${trips[index]['price']}',
                                   style: const TextStyle(color: Colors.green),
                                 ),
                               ],
@@ -138,47 +138,65 @@ class _TripsScreenState extends State<TripsScreen> {
                           ],
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Icon(Icons.error_outline_rounded,
-                                color: Colors.blueGrey[700]),
-                            Text('Status: ${trips[index]['status']}')
+                            Row(
+                              children: [
+                                Icon(Icons.error_outline_rounded,
+                                    color: Colors.blueGrey[700]),
+                                Text('Status: ${trips[index]['status']}')
+                              ],
+                            ),
+                            MaterialButton(
+                              onPressed: trips[index]['status'] ==
+                                      "Not Finished"
+                                  ? () async {
+                                      if (date.compareTo(DateTime.now()) < 0) {
+                                        await FirebaseFirestore.instance
+                                            .collection('trips')
+                                            .doc(trips[index].id)
+                                            .update({'status': 'Finished'});
+                                        setState(() {});
+                                      }
+                                      else{
+                                        showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: const Text('Alert'),
+                                                content: const Text(
+                                                    'You can not finish the trip until it starts '),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context).pop();
+                                                    },
+                                                    child: Text(
+                                                      'OK',
+                                                      style: TextStyle(
+                                                          color: Colors.blueGrey[700]),
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            });
+                                      }
+                                    }
+                                  : null,
+                              child: Text(
+                                'Finish',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              color: Colors.red,
+                              disabledColor: Colors.grey,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15)),
+                            )
                           ],
                         )
                       ],
                     ),
-                    onTap: () async {
-                      {
-                        String driverId = trips[index]['details']['driverId'];
-                        final driverDoc = await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(driverId)
-                            .get();
-                        final driverInfo = driverDoc.data();
-                        Trip trip = Trip(
-                            from: trips[index]['details']['from'],
-                            to: trips[index]['details']['to'],
-                            price: trips[index]['details']['price'],
-                            time: trips[index]['details']['time'].toDate(),
-                            from_lat: trips[index]['details']['from_lat'],
-                            from_lng: trips[index]['details']['from_lng'],
-                            to_lat: trips[index]['details']['to_lat'],
-                            to_lng: trips[index]['details']['to_lng'],
-                            driverName:
-                                "${driverInfo!['firstName']} ${driverInfo['lastName']}",
-                            carModel: driverInfo['carModel'],
-                            carColor: driverInfo['carColor'],
-                            status: trips[index]['status']);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TripDetailsScreen(
-                              data: trip,
-                              isBooking: false,
-                            ),
-                          ),
-                        );
-                      }
-                    },
+                    onTap: () async {},
                   ),
                 ),
               );

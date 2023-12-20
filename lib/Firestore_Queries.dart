@@ -33,3 +33,7 @@ Future<List<Map<String, dynamic>>> getUserTrips(String userId) async {
 
   return userTrips;
 }
+
+Future<QuerySnapshot<Map<String, dynamic>>> getDriverTrips(String driverId) async{
+  return await FirebaseFirestore.instance.collection('trips').where('driverId',isEqualTo:driverId).get();
+}

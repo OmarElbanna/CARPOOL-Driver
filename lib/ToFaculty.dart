@@ -239,10 +239,10 @@ class _ToFacultyState extends State<ToFaculty> {
                             'from_lng': selectedLocation!.longitude,
                             'price': int.parse(price.text),
                             'time': Timestamp.fromDate(tripTime),
-                            // Replace with the actual time
                             'to': fromdropdownvalue,
                             'to_lat': 30.06463470271536,
                             'to_lng': 31.278822840356383,
+                            'status': "Not Finished"
                           })
                           .then((value) => showDialog(
                               context: context,
