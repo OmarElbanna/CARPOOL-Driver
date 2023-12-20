@@ -14,11 +14,29 @@ class TripRequestsScreen extends StatefulWidget {
 }
 
 class _TripRequestsScreenState extends State<TripRequestsScreen> {
+  bool bypass = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blueGrey[600],
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Switch(
+              value: bypass, // Set the initial value of the switch
+              onChanged: (bool value) {
+                setState(() {
+                  bypass = value;
+                });
+              },
+              activeColor: Colors.green, // Color when the switch is ON
+              inactiveTrackColor:
+                  Colors.red, // Color of the switch track when OFF
+            ),
+          ),
+        ],
         backgroundColor: Colors.blueGrey[700],
         title: const Text(
           "Trip Requests",
@@ -107,23 +125,73 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                               IconButton(
                                 onPressed: () async {
                                   if (widget.trip.acceptedRiders! < 4) {
-                                    await FirebaseFirestore.instance
-                                        .collection('requests')
-                                        .doc(userRequests[index]['requestId'])
-                                        .update({'status': 'accepted'});
-                                    await FirebaseFirestore.instance
-                                        .collection('trips')
-                                        .doc(widget.trip.id)
-                                        .update({
-                                      'acceptedRiders': FieldValue.increment(1)
-                                    });
-                                    setState(() {});
+                                    DateTime currentTime = DateTime.now();
+                                    DateTime acceptanceDeadline;
+                                    if (widget.trip.time!.hour == 7) {
+                                      acceptanceDeadline = DateTime(
+                                        widget.trip.time!.year,
+                                        widget.trip.time!.month,
+                                        widget.trip.time!.day - 1,
+                                        23, // 10:00 pm
+                                        30,
+                                      );
+                                    } else if (widget.trip.time!.hour == 17) {
+                                      acceptanceDeadline = DateTime(
+                                        widget.trip.time!.year,
+                                        widget.trip.time!.month,
+                                        widget.trip.time!.day,
+                                        16,
+                                        30,
+                                      );
+                                    } else {
+                                      acceptanceDeadline = DateTime.now();
+                                    }
+                                    if (currentTime
+                                        .isBefore(acceptanceDeadline)) {
+                                      await FirebaseFirestore.instance
+                                          .collection('requests')
+                                          .doc(userRequests[index]['requestId'])
+                                          .update({'status': 'accepted'});
+                                      await FirebaseFirestore.instance
+                                          .collection('trips')
+                                          .doc(widget.trip.id)
+                                          .update({
+                                        'acceptedRiders':
+                                            FieldValue.increment(1)
+                                      });
+                                      setState(() {});
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text(
+                                                  'Acceptance Deadline Passed'),
+                                              content: const Text(
+                                                  'Sorry, the acceptance deadline for this trip has passed.'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: Text(
+                                                    'OK',
+                                                    style: TextStyle(
+                                                        color: Colors
+                                                            .blueGrey[700]),
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          });
+                                    }
                                   } else {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: const Text('Alert'),
+                                            title:
+                                                const Text('Car Full Capacity'),
                                             content: const Text(
                                                 'You can not accept more that 4 riders'),
                                             actions: [

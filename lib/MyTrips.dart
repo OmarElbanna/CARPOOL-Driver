@@ -211,7 +211,7 @@ class _TripsScreenState extends State<TripsScreen> {
                       ],
                     ),
                     onTap: () {
-                      Trip trip = Trip(id: trips[index].id,acceptedRiders: trips[index]['acceptedRiders']);
+                      Trip trip = Trip(id: trips[index].id,acceptedRiders: trips[index]['acceptedRiders'],time: date);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
