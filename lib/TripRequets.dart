@@ -147,7 +147,8 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                                       acceptanceDeadline = DateTime.now();
                                     }
                                     if (currentTime
-                                        .isBefore(acceptanceDeadline)) {
+                                            .isBefore(acceptanceDeadline) ||
+                                        bypass) {
                                       await FirebaseFirestore.instance
                                           .collection('requests')
                                           .doc(userRequests[index]['requestId'])
