@@ -1,5 +1,6 @@
-
 import 'package:carpool_driver/PinLocation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -18,6 +19,7 @@ class _FromFacultyState extends State<FromFaculty> {
   TextEditingController map = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   LatLng? selectedLocation;
+  late User user;
 
   late DateTime? pickedDate;
   var gates = [
@@ -56,9 +58,10 @@ class _FromFacultyState extends State<FromFaculty> {
 
   @override
   void initState() {
-    time.text = "7:30 AM";
+    time.text = "5:30 PM";
     pickedDate = null;
     super.initState();
+    user = FirebaseAuth.instance.currentUser!;
   }
 
   @override
@@ -107,12 +110,12 @@ class _FromFacultyState extends State<FromFaculty> {
               ),
               const SizedBox(height: 20),
               TextFormField(
-
                 readOnly: true,
                 onTap: () async {
                   selectedLocation = await Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PinLocationScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => PinLocationScreen()),
                   );
 
                   if (selectedLocation != null) {
@@ -121,9 +124,7 @@ class _FromFacultyState extends State<FromFaculty> {
                     setState(() {
                       map.text = "Location is pinned successfully";
                     });
-
-                  }
-                  else{
+                  } else {
                     setState(() {
                       map.text = '';
                     });
@@ -140,8 +141,7 @@ class _FromFacultyState extends State<FromFaculty> {
                   suffixIcon: Icon(Icons.pin_drop),
                   label: Text("Location on map"),
                   border: OutlineInputBorder(
-                      borderRadius:
-                      BorderRadius.all(Radius.circular(5))),
+                      borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
               ),
               const SizedBox(
@@ -205,7 +205,88 @@ class _FromFacultyState extends State<FromFaculty> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15)),
                 onPressed: () async {
-                  if (_formKey.currentState?.validate() ?? false) {}
+                  if (_formKey.currentState?.validate() ?? false) {
+                    DateTime tripTime =
+                        pickedDate!.add(const Duration(hours: 7, minutes: 30));
+                    if (tripTime.compareTo(DateTime.now()) < 0) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Alert'),
+                              content: const Text('You can not add this trip '),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text(
+                                    'OK',
+                                    style:
+                                        TextStyle(color: Colors.blueGrey[700]),
+                                  ),
+                                ),
+                              ],
+                            );
+                          });
+                    } else {
+                      await FirebaseFirestore.instance
+                          .collection('trips')
+                          .add({
+                            'driverId': user.uid,
+                            'to': destination.text,
+                            'to_lat': selectedLocation!.latitude,
+                            'to_lng': selectedLocation!.longitude,
+                            'price': int.parse(price.text),
+                            'time': Timestamp.fromDate(tripTime),
+                            'from': fromdropdownvalue,
+                            'from_lat': 30.06463470271536,
+                            'from_lng': 31.278822840356383,
+                          })
+                          .then((value) => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Success'),
+                                  content: const Text(
+                                      'Trip has been added successfully'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        'OK',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey[700]),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }))
+                          .catchError((error) => showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Fail'),
+                                  content: const Text(
+                                      'Error in adding the trip, please try again'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        'OK',
+                                        style: TextStyle(
+                                            color: Colors.blueGrey[700]),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }));
+                    }
+                  }
                 },
                 color: Colors.blueGrey[700],
                 child: const Text(
