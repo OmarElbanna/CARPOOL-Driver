@@ -74,11 +74,32 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                           ),
                         ],
                       ),
-                      subtitle: Row(
+                      subtitle: Column(
                         children: [
-                          Icon(Icons.error_outline_rounded),
-                          Text("Status: "),
-                          Text(userRequests[index]['status'],style: TextStyle(color:userRequests[index]['status']=='accepted'?Colors.green : userRequests[index]['status'] == 'rejected'?Colors.red : null ),)
+                          Row(
+                            children: [
+                              Icon(Icons.error_outline_rounded),
+                              Text("Status: "),
+                              Text(
+                                userRequests[index]['status'],
+                                style: TextStyle(
+                                    color: userRequests[index]['status'] ==
+                                            'accepted'
+                                        ? Colors.green
+                                        : userRequests[index]['status'] ==
+                                                'rejected'
+                                            ? Colors.red
+                                            : null),
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              const Icon(Icons.phone),
+                              const Text("Phone Number: "),
+                              Text('${userRequests[index]['details']['phone']}')
+                            ],
+                          )
                         ],
                       ),
                       trailing: userRequests[index]['status'] == 'requested'
@@ -97,8 +118,7 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                                       'acceptedRiders': FieldValue.increment(1)
                                     });
                                     setState(() {});
-                                  }
-                                  else{
+                                  } else {
                                     showDialog(
                                         context: context,
                                         builder: (BuildContext context) {
@@ -114,7 +134,8 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                                                 child: Text(
                                                   'OK',
                                                   style: TextStyle(
-                                                      color: Colors.blueGrey[700]),
+                                                      color:
+                                                          Colors.blueGrey[700]),
                                                 ),
                                               ),
                                             ],
