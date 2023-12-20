@@ -78,22 +78,59 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                         children: [
                           Icon(Icons.error_outline_rounded),
                           Text("Status: "),
-                          Text(userRequests[index]['status'])
+                          Text(userRequests[index]['status'],style: TextStyle(color:userRequests[index]['status']=='accepted'?Colors.green : userRequests[index]['status'] == 'rejected'?Colors.red : null ),)
                         ],
                       ),
                       trailing: userRequests[index]['status'] == 'requested'
                           ? Row(mainAxisSize: MainAxisSize.min, children: [
                               IconButton(
-                                onPressed: () async{
-                                  await FirebaseFirestore.instance.collection('requests').doc(userRequests[index]['requestId']).update({'status':'accepted'});
-                                  setState(() {});
+                                onPressed: () async {
+                                  if (widget.trip.acceptedRiders! < 4) {
+                                    await FirebaseFirestore.instance
+                                        .collection('requests')
+                                        .doc(userRequests[index]['requestId'])
+                                        .update({'status': 'accepted'});
+                                    await FirebaseFirestore.instance
+                                        .collection('trips')
+                                        .doc(widget.trip.id)
+                                        .update({
+                                      'acceptedRiders': FieldValue.increment(1)
+                                    });
+                                    setState(() {});
+                                  }
+                                  else{
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text('Alert'),
+                                            content: const Text(
+                                                'You can not accept more that 4 riders'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text(
+                                                  'OK',
+                                                  style: TextStyle(
+                                                      color: Colors.blueGrey[700]),
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  }
                                 },
                                 icon: Icon(Icons.check),
                                 color: Colors.green,
                               ),
                               IconButton(
-                                onPressed: () async{
-                                  await FirebaseFirestore.instance.collection('requests').doc(userRequests[index]['requestId']).update({'status':'Rejected'});
+                                onPressed: () async {
+                                  await FirebaseFirestore.instance
+                                      .collection('requests')
+                                      .doc(userRequests[index]['requestId'])
+                                      .update({'status': 'rejected'});
 
                                   setState(() {});
                                 },

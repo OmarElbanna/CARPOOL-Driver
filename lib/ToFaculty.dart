@@ -242,7 +242,8 @@ class _ToFacultyState extends State<ToFaculty> {
                             'to': fromdropdownvalue,
                             'to_lat': 30.06463470271536,
                             'to_lng': 31.278822840356383,
-                            'status': "Not Finished"
+                            'status': "Not Finished",
+                            'acceptedRiders': 0
                           })
                           .then((value) => showDialog(
                               context: context,

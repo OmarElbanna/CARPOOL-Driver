@@ -12,6 +12,7 @@ class Trip {
   String? driverName;
   String? carModel;
   String? carColor;
+  int?acceptedRiders;
 
   Trip(
       {this.from,
@@ -26,5 +27,6 @@ class Trip {
       this.id,
       this.carColor,
       this.carModel,
-      this.driverName});
+      this.driverName,
+      this.acceptedRiders});
 }

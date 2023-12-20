@@ -124,6 +124,30 @@ class _TripsScreenState extends State<TripsScreen> {
                                 Text(' Time: $timeToShow'),
                               ],
                             ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.error_outline_rounded,
+                                    color: Colors.blueGrey[700]),
+                                Text('Status: ${trips[index]['status']}')
+                              ],
+                            ),
+
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.numbers),
+                            Text('Accepted Riders: ${trips[index]['acceptedRiders']}'),
+
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
                             Row(
                               children: [
                                 const Icon(
@@ -136,53 +160,42 @@ class _TripsScreenState extends State<TripsScreen> {
                                 ),
                               ],
                             ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.error_outline_rounded,
-                                    color: Colors.blueGrey[700]),
-                                Text('Status: ${trips[index]['status']}')
-                              ],
-                            ),
                             MaterialButton(
                               onPressed: trips[index]['status'] ==
-                                      "Not Finished"
+                                  "Not Finished"
                                   ? () async {
-                                      if (date.compareTo(DateTime.now()) < 0) {
-                                        await FirebaseFirestore.instance
-                                            .collection('trips')
-                                            .doc(trips[index].id)
-                                            .update({'status': 'Finished'});
-                                        setState(() {});
-                                      }
-                                      else{
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return AlertDialog(
-                                                title: const Text('Alert'),
-                                                content: const Text(
-                                                    'You can not finish the trip until it starts '),
-                                                actions: [
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      Navigator.of(context).pop();
-                                                    },
-                                                    child: Text(
-                                                      'OK',
-                                                      style: TextStyle(
-                                                          color: Colors.blueGrey[700]),
-                                                    ),
-                                                  ),
-                                                ],
-                                              );
-                                            });
-                                      }
-                                    }
+                                if (date.compareTo(DateTime.now()) < 0) {
+                                  await FirebaseFirestore.instance
+                                      .collection('trips')
+                                      .doc(trips[index].id)
+                                      .update({'status': 'Finished'});
+                                  setState(() {});
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Alert'),
+                                          content: const Text(
+                                              'You can not finish the trip until it starts '),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop();
+                                              },
+                                              child: Text(
+                                                'OK',
+                                                style: TextStyle(
+                                                    color: Colors
+                                                        .blueGrey[700]),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                }
+                              }
                                   : null,
                               child: Text(
                                 'Finish',
@@ -192,13 +205,13 @@ class _TripsScreenState extends State<TripsScreen> {
                               disabledColor: Colors.grey,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(15)),
-                            )
+                            ),
                           ],
                         )
                       ],
                     ),
                     onTap: () {
-                      Trip trip = Trip(id: trips[index].id);
+                      Trip trip = Trip(id: trips[index].id,acceptedRiders: trips[index]['acceptedRiders']);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -206,7 +219,9 @@ class _TripsScreenState extends State<TripsScreen> {
                             trip: trip,
                           ),
                         ),
-                      );
+                      ).then((value) => setState(() {
+
+                      },));
                     },
                   ),
                 ),
