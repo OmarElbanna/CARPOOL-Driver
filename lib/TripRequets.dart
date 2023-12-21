@@ -45,8 +45,8 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
         centerTitle: true,
       ),
       body: Center(
-          child: FutureBuilder(
-        future: getTripRequests(widget.trip.id!),
+          child: StreamBuilder(
+        stream: getTripRequestsStream(widget.trip.id!),
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
