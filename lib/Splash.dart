@@ -29,7 +29,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -40,10 +39,10 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             Text(
               "Driver",
-              style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold) ,
             ),
-            SpinKitFadingCircle(
-              color: Colors.blueGrey[700],
+            CircularProgressIndicator(
+
             ),
           ],
         ));

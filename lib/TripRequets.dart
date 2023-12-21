@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:carpool_driver/Firestore_Queries.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[600],
       appBar: AppBar(
         actions: [
           Padding(
@@ -31,13 +31,11 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                   bypass = value;
                 });
               },
-              activeColor: Colors.green, // Color when the switch is ON
-              inactiveTrackColor:
-                  Colors.red, // Color of the switch track when OFF
+              activeTrackColor:
+                  Colors.green, // Color of the switch track when OFF
             ),
           ),
         ],
-        backgroundColor: Colors.blueGrey[700],
         title: const Text(
           "Trip Requests",
           style: TextStyle(
@@ -52,9 +50,7 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-              ),
+              child: CircularProgressIndicator(),
             );
           }
           if (snapshot.hasError) {
@@ -76,7 +72,6 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
               return Padding(
                 padding: const EdgeInsets.all(3),
                 child: Card(
-                  color: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -162,54 +157,26 @@ class _TripRequestsScreenState extends State<TripRequestsScreen> {
                                       });
                                       setState(() {});
                                     } else {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return AlertDialog(
-                                              title: const Text(
-                                                  'Acceptance Deadline Passed'),
-                                              content: const Text(
-                                                  'Sorry, the acceptance deadline for this trip has passed.'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                  child: Text(
-                                                    'OK',
-                                                    style: TextStyle(
-                                                        color: Colors
-                                                            .blueGrey[700]),
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          });
+                                      AwesomeDialog(
+                                        context: context,
+                                        dialogType: DialogType.error,
+                                        animType: AnimType.rightSlide,
+                                        title: 'Fail',
+                                        desc:
+                                            'Sorry, the acceptance deadline for this trip has passed. For testing purposes you can bypass this constraint by toggling the switch in the app bar',
+                                        btnOkOnPress: () {},
+                                      )..show();
                                     }
                                   } else {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title:
-                                                const Text('Car Full Capacity'),
-                                            content: const Text(
-                                                'You can not accept more that 4 riders'),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                                child: Text(
-                                                  'OK',
-                                                  style: TextStyle(
-                                                      color:
-                                                          Colors.blueGrey[700]),
-                                                ),
-                                              ),
-                                            ],
-                                          );
-                                        });
+                                    AwesomeDialog(
+                                      context: context,
+                                      dialogType: DialogType.error,
+                                      animType: AnimType.rightSlide,
+                                      title: 'Fail',
+                                      desc:
+                                          'You can not accept more than 4 riders',
+                                      btnOkOnPress: () {},
+                                    )..show();
                                   }
                                 },
                                 icon: Icon(Icons.check),

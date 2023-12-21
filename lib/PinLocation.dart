@@ -19,7 +19,6 @@ class _PinLocationScreenState extends State<PinLocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[700],
         centerTitle: true,
         title: const Text(
           'Select Location on Map',
@@ -39,17 +38,14 @@ class _PinLocationScreenState extends State<PinLocationScreen> {
         ),
         onTap: (LatLng latLng) {
           setState(() {
-            myMarker=[];
+            myMarker = [];
             selectedLocation = latLng;
             myMarker.add(Marker(
-              markerId: MarkerId(latLng.toString()),
-              position: latLng
-            ));
+                markerId: MarkerId(latLng.toString()), position: latLng));
           });
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.blueGrey[700],
         onPressed: () {
           if (selectedLocation != null) {
             Navigator.pop(context, selectedLocation);

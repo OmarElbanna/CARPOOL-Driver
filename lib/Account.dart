@@ -51,7 +51,6 @@ class _AccountScreenState extends State<AccountScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[700],
         title: const Text(
           "My Account",
           style: TextStyle(
@@ -65,9 +64,7 @@ class _AccountScreenState extends State<AccountScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
-              child: CircularProgressIndicator(
-                color: Colors.blueGrey[700],
-              ),
+              child: CircularProgressIndicator(),
             );
           }
           final userData = snapshot.data![0] as Map<String, dynamic>;
@@ -83,9 +80,11 @@ class _AccountScreenState extends State<AccountScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 140,
-                      child: Image.asset("images/download.png"),
+                    CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 70,
+                      child:
+                          Image.asset("images/download-removebg-preview.png"),
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
@@ -131,7 +130,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       height: 20,
                     ),
                     const SizedBox(height: 20),
-                    MaterialButton(
+                    ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
                           Connectivity connectivity = Connectivity();
@@ -178,7 +177,6 @@ class _AccountScreenState extends State<AccountScreen> {
                           }
                         }
                       },
-                      color: Colors.blueGrey[700],
                       child: const Text(
                         "Save",
                         style: TextStyle(

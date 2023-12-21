@@ -1,16 +1,11 @@
 import 'dart:async';
-
 import 'package:carpool_driver/FromFaculty.dart';
 import 'package:carpool_driver/Sqflite_Queries.dart';
 import 'package:carpool_driver/ToFaculty.dart';
-
 import 'Account.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Trip.dart';
-import 'TripDetails.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,7 +43,6 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: Icon(Icons.school_outlined),
             ),
           ]),
-          backgroundColor: Colors.blueGrey[700],
           title: const Text(
             "Add New Trip",
             style: TextStyle(
@@ -77,8 +71,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Column(
                     children: [
                       UserAccountsDrawerHeader(
-                          decoration:
-                              BoxDecoration(color: Colors.blueGrey[700]),
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                            color: Colors.white,
+                            width: 2.0,
+                          ))),
                           currentAccountPicture: const CircleAvatar(
                             radius: 200,
                             backgroundImage: AssetImage("images/download.png"),
@@ -87,11 +85,16 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text(
                               "${userData['firstName']} ${userData['lastName']}",
                               style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.bold),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
                             ),
                             onTap: () {},
                           ),
-                          accountEmail: Text(userData['email'])),
+                          accountEmail: Text(
+                            userData['email'],
+                            style: TextStyle(color: Colors.white),
+                          )),
                       ListTile(
                         title: const Text("Account"),
                         leading: const Icon(Icons.account_circle_rounded),
@@ -109,7 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       const Divider(
-                        thickness: 1,
+                        color: Colors.white,
+                        thickness: 2,
                       ),
                       ListTile(
                           title: const Text("My Trips"),
@@ -121,7 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             });
                           }),
                       const Divider(
-                        thickness: 1,
+                        color: Colors.white,
+                        thickness: 2,
                       ),
                       ListTile(
                         title: const Text("Logout"),

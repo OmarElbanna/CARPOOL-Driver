@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:carpool_driver/PinLocation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -200,97 +201,53 @@ class _FromFacultyState extends State<FromFaculty> {
                       borderRadius: BorderRadius.all(Radius.circular(5))),
                 ),
               ),
-              const SizedBox(height: 1),
-              MaterialButton(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
+              const SizedBox(height: 5),
+              ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
                     DateTime tripTime =
                         pickedDate!.add(const Duration(hours: 17, minutes: 30));
                     if (tripTime.compareTo(DateTime.now()) < 0) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Alert'),
-                              content: const Text('You can not add this trip '),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text(
-                                    'OK',
-                                    style:
-                                        TextStyle(color: Colors.blueGrey[700]),
-                                  ),
-                                ),
-                              ],
-                            );
-                          });
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'Failed',
+                        desc:
+                            'Sorry, You can not add this trip. Trip time has passed',
+                        btnOkOnPress: () {},
+                      )..show();
                     } else {
-                      await FirebaseFirestore.instance
-                          .collection('trips')
-                          .add({
-                            'driverId': user.uid,
-                            'to': destination.text,
-                            'to_lat': selectedLocation!.latitude,
-                            'to_lng': selectedLocation!.longitude,
-                            'price': int.parse(price.text),
-                            'time': Timestamp.fromDate(tripTime),
-                            'from': fromdropdownvalue,
-                            'from_lat': 30.06463470271536,
-                            'from_lng': 31.278822840356383,
-                            'status': "Not Finished",
-                            'acceptedRiders': 0
-                          })
-                          .then((value) => showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Success'),
-                                  content: const Text(
-                                      'Trip has been added successfully'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        'OK',
-                                        style: TextStyle(
-                                            color: Colors.blueGrey[700]),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }))
-                          .catchError((error) => showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: const Text('Fail'),
-                                  content: const Text(
-                                      'Error in adding the trip, please try again'),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text(
-                                        'OK',
-                                        style: TextStyle(
-                                            color: Colors.blueGrey[700]),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }));
+                      await FirebaseFirestore.instance.collection('trips').add({
+                        'driverId': user.uid,
+                        'to': destination.text,
+                        'to_lat': selectedLocation!.latitude,
+                        'to_lng': selectedLocation!.longitude,
+                        'price': int.parse(price.text),
+                        'time': Timestamp.fromDate(tripTime),
+                        'from': fromdropdownvalue,
+                        'from_lat': 30.06463470271536,
+                        'from_lng': 31.278822840356383,
+                        'status': "Not Finished",
+                        'acceptedRiders': 0
+                      }).then((value) => AwesomeDialog(
+                            context: context,
+                            dialogType: DialogType.success,
+                            animType: AnimType.rightSlide,
+                            title: 'Success',
+                            desc: 'Your trip has been added successfully',
+                            btnOkOnPress: () {},
+                          )..show().catchError((error) => AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'Fail',
+                                desc: 'Error in adding trip, please try again',
+                                btnOkOnPress: () {},
+                              )..show()));
                     }
                   }
                 },
-                color: Colors.blueGrey[700],
                 child: const Text(
                   "Add Trip",
                   style: TextStyle(

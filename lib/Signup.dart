@@ -104,7 +104,6 @@ class _SignupScreenState extends State<SignupScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[700],
         title: const Text(
           "Signup",
           style: TextStyle(
@@ -114,10 +113,7 @@ class _SignupScreenState extends State<SignupScreen> {
         centerTitle: true,
       ),
       body: isLoading
-          ?  Center(
-              child: CircularProgressIndicator(
-              color: Colors.blueGrey[700],
-            ))
+          ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Center(
                   child: Padding(
@@ -263,7 +259,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      MaterialButton(
+                      ElevatedButton(
                         onPressed: () async {
                           setState(() {
                             errorMessage = null;
@@ -288,8 +284,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     'lastName': lastName.text,
                                     'phone': phone.text,
                                     'type': 'driver',
-                                    'carModel':carModel.text,
-                                    'carColor':carColor.text
+                                    'carModel': carModel.text,
+                                    'carColor': carColor.text
                                   })
                                   .then((value) => print("Driver Added"))
                                   .catchError((error) =>
@@ -302,8 +298,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 context: context,
                                 dialogType: DialogType.success,
                                 animType: AnimType.rightSlide,
-                                title:
-                                    'Success',
+                                title: 'Success',
                                 desc:
                                     'Your account has been created successfully',
                                 btnOkOnPress: () {
@@ -333,7 +328,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             }
                           }
                         },
-                        color: Colors.blueGrey[700],
                         child: const Text(
                           "Signup",
                           style: TextStyle(
@@ -346,8 +340,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text("Already have an account"),
-                          GestureDetector(
-                            onTap: () {
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {
                               // Navigator.popAndPushNamed(context, '/login');
                               Navigator.pushNamedAndRemoveUntil(
                                   context, '/login', (route) => false);
@@ -355,8 +350,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             child: Text(
                               "  Login",
                               style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey[700]),
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           )
                         ],
