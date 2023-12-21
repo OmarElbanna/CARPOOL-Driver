@@ -1,8 +1,10 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:carpool_driver/Sqflite_Queries.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class AccountScreen extends StatefulWidget {
   final Function() updateCallback;
@@ -58,24 +60,18 @@ class _AccountScreenState extends State<AccountScreen> {
         ),
         centerTitle: true,
       ),
-      body: FutureBuilder<DocumentSnapshot>(
-        future:
-            FirebaseFirestore.instance.collection('users').doc(user.uid).get(),
+      body: FutureBuilder(
+        future: getUserData(user.uid),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
+            return Center(
               child: CircularProgressIndicator(
-                color: Colors.white,
+                color: Colors.blueGrey[700],
               ),
             );
           }
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Text('User data not found');
-          }
-          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final userData = snapshot.data![0] as Map<String, dynamic>;
+
           firstName.text = userData['firstName'];
           lastName.text = userData['lastName'];
           phone.text = userData['phone'];
@@ -95,7 +91,6 @@ class _AccountScreenState extends State<AccountScreen> {
                     TextFormField(
                       validator: validateName,
                       controller: firstName,
-                      // initialValue: userData['firstName'],
                       keyboardType: TextInputType.name,
                       decoration: const InputDecoration(
                         label: Text("First Name"),
@@ -135,55 +130,52 @@ class _AccountScreenState extends State<AccountScreen> {
                     const SizedBox(
                       height: 20,
                     ),
-                    // TextFormField(
-                    //   initialValue: "123456789",
-                    //   keyboardType: TextInputType.visiblePassword,
-                    //   obscureText: passwordVisible,
-                    //   decoration: InputDecoration(
-                    //     label: const Text("Password"),
-                    //     suffixIcon: IconButton(
-                    //         onPressed: () {
-                    //           setState(() {
-                    //             passwordVisible = !passwordVisible;
-                    //           });
-                    //         },
-                    //         icon: Icon(passwordVisible
-                    //             ? Icons.visibility
-                    //             : Icons.visibility_off)),
-                    //     border: const OutlineInputBorder(
-                    //         borderRadius: BorderRadius.all(Radius.circular(5))),
-                    //   ),
-                    // ),
                     const SizedBox(height: 20),
                     MaterialButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_formKey.currentState?.validate() ?? false) {
-                          FirebaseFirestore.instance
-                              .collection('users')
-                              .doc(user.uid)
-                              .update({
-                                'firstName': firstName.text,
-                                'lastName': lastName.text,
-                                'phone': phone.text
-                              })
-                              .then((value) => AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.success,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Success',
-                                    desc: 'Successfully updated user account',
-                                    btnOkOnPress: () {},
-                                  )..show())
-                              .catchError((error) => AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Error',
-                                    desc:
-                                        'Something wrong happened, please try again later',
-                                    btnOkOnPress: () {},
-                                  )..show());
-                          widget.updateCallback();
+                          Connectivity connectivity = Connectivity();
+                          final status = await connectivity.checkConnectivity();
+                          print(status);
+                          if (status == ConnectivityResult.wifi) {
+                            await updateUser(user.uid, firstName.text,
+                                lastName.text, phone.text, user.email!);
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.uid)
+                                .update({
+                                  'firstName': firstName.text,
+                                  'lastName': lastName.text,
+                                  'phone': phone.text
+                                })
+                                .then((value) => AwesomeDialog(
+                                      context: context,
+                                      dialogType: DialogType.success,
+                                      animType: AnimType.rightSlide,
+                                      title: 'Success',
+                                      desc: 'Successfully updated user account',
+                                      btnOkOnPress: () {},
+                                    )..show())
+                                .catchError((error) => AwesomeDialog(
+                                      context: context,
+                                      dialogType: DialogType.error,
+                                      animType: AnimType.rightSlide,
+                                      title: 'Error',
+                                      desc:
+                                          'Something wrong happened, please try again later',
+                                      btnOkOnPress: () {},
+                                    )..show());
+                            widget.updateCallback();
+                          } else {
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.error,
+                              animType: AnimType.rightSlide,
+                              title: 'Error',
+                              desc: 'No internet connection',
+                              btnOkOnPress: () {},
+                            )..show();
+                          }
                         }
                       },
                       color: Colors.blueGrey[700],

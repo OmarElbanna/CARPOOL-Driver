@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'Sqflite_Queries.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -132,6 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                 String type = userData!['type'];
                                 if (type.compareTo("driver") == 0) {
                                   print("Driver#############");
+                                  String firstName = userData['firstName'];
+                                  String lastName = userData['lastName'];
+                                  String emailDB = email.text;
+                                  String phone = userData['phone'];
+                                  String ID = credential.user!.uid;
+
+                                  await insertUser(ID, firstName, lastName, phone, emailDB);
                                   Navigator.pushReplacementNamed(
                                       context, '/home');
                                 } else {

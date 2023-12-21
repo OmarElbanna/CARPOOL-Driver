@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:carpool_driver/FromFaculty.dart';
+import 'package:carpool_driver/Sqflite_Queries.dart';
 import 'package:carpool_driver/ToFaculty.dart';
 
 import 'Account.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Trip.dart';
 import 'TripDetails.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,24 +65,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         drawer: Drawer(
             child: FutureBuilder(
-                future: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(user.uid)
-                    .get(),
+                future: getUserData(user.uid),
                 builder: (con, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
-                  if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  }
-                  if (!snapshot.hasData || !snapshot.data!.exists) {
-                    return const Text('User data not found');
-                  }
-                  final userData =
-                      snapshot.data!.data() as Map<String, dynamic>;
+
+                  final userData = snapshot.data![0] as Map<String, dynamic>;
                   return Column(
                     children: [
                       UserAccountsDrawerHeader(
@@ -98,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             onTap: () {},
                           ),
-                          accountEmail: Text(user.email!)),
+                          accountEmail: Text(userData['email'])),
                       ListTile(
                         title: const Text("Account"),
                         leading: const Icon(Icons.account_circle_rounded),
@@ -134,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: const Text("Logout"),
                         leading: const Icon(Icons.logout_outlined),
                         onTap: () async {
+                          await deleteUser();
                           await FirebaseAuth.instance.signOut();
                           Navigator.pushNamedAndRemoveUntil(
                               context, '/login', (route) => false);
