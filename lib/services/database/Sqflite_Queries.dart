@@ -1,5 +1,5 @@
 import 'package:sqflite/sqflite.dart';
-import 'Database.dart';
+import '../../models/Database.dart';
 
 UsersDB db = UsersDB();
 

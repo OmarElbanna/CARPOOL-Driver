@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:carpool_driver/FromFaculty.dart';
-import 'package:carpool_driver/Sqflite_Queries.dart';
-import 'package:carpool_driver/ToFaculty.dart';
-import 'Account.dart';
+import 'package:carpool_driver/views/new%20trip/FromFaculty.dart';
+import 'package:carpool_driver/services/database/Sqflite_Queries.dart';
+import 'package:carpool_driver/views/new%20trip/ToFaculty.dart';
+import 'my account/Account.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'Trip.dart';
+import '../models/Trip.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

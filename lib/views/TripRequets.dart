@@ -1,9 +1,9 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:carpool_driver/Firestore_Queries.dart';
+import 'package:carpool_driver/services/database/Firestore_Queries.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'Trip.dart';
+import '../models/Trip.dart';
 
 class TripRequestsScreen extends StatefulWidget {
   final Trip trip;

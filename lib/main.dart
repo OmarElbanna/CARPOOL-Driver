@@ -3,12 +3,12 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'Account.dart';
-import 'Home.dart';
-import 'Login.dart';
-import 'MyTrips.dart';
-import 'Signup.dart';
-import 'Splash.dart';
+import 'views/my account/Account.dart';
+import 'views/Home.dart';
+import 'auth/Login.dart';
+import 'views/my account/MyTrips.dart';
+import 'auth/Signup.dart';
+import 'views/Splash.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
